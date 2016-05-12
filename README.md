@@ -1,6 +1,6 @@
 ## Katsudö is a small and simple animation library for [LÖVE](https://love2d.org/)
 
-The code for this demo is this one:
+Here's an example:
 
 ```lua
 local k = require "katsudo"
