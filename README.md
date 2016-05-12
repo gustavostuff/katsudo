@@ -1,4 +1,4 @@
-## Katsudö is a small, effective animation library for [LÖVE](https://love2d.org/)
+## Katsudö is a small and simple animation library for [LÖVE](https://love2d.org/)
 
 The code for this demo is this one:
 
