@@ -9,10 +9,10 @@ function love.load()
 	gr = love.graphics
 	gr.setBackgroundColor(213, 65, 0)
 
-	tc = k.new("thundercloud.png", 30, 55, 18, 0.08)
-	tc2 = k.new("thundercloud.png", 30, 55, 18, 0.08, "rough")
-	tc3 = k.new("thundercloud.png", 30, 55, 18, 0.08).rewind()
-	tc4 = k.new("thundercloud.png", 30, 55, 18, 0.08).once()
+	tc = k.new("tc.png", 30, 55, 18, 0.08)
+	tc2 = k.new("tc.png", 30, 55, 18, 0.08, "rough")
+	tc3 = k.new("tc.png", 30, 55, 18, 0.08).rewind()
+	tc4 = k.new("tc.png", 30, 55, 18, 0.08).once()
 end
 
 function love.update(dt)
