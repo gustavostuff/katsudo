@@ -4,7 +4,7 @@ function love.load()
 	gr = love.graphics
 	gr.setBackgroundColor(213, 65, 0)
 
-	-- 18 frames of 30x18 at 25 FPS:
+	-- 18 frames of 30x55 at 25 FPS:
 	tc  = k.new("tc.png", 30, 55, 18, 0.04)
 	tc2 = k.new("tc.png", 30, 55, 18, 0.04, "rough")
 	tc3 = k.new("tc.png", 30, 55, 18, 0.04):rewind()
