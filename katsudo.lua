@@ -1,7 +1,10 @@
 katsudo = {}
+katsudo.__index = katsudo
 katsudo.anims = {}
 
 function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
+	local newAnim = {}
+	
 	if not img then
 		error("Error in katsudo.new() parameter #1, please provide an image (string or Image)")
 	end
@@ -17,11 +20,15 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
 		img:setFilter("nearest", "nearest")
 	end
 
-	local newAnim = {}
-	local imgW = img:getWidth()
-	local imgH = img:getHeight()
+	newAnim.img = img
+	local imgW = newAnim.img:getWidth()
+	local imgH = newAnim.img:getHeight()
 
-	local automaticNumberOfQuads = (imgW / quadWidth) * (imgH / quadHeight)
+	local automaticNumberOfQuads = math.floor(imgW / quadWidth) * math.floor(imgH / quadHeight)
+
+	if numberOfQuads and numberOfQuads > automaticNumberOfQuads then
+		error("Error in katsudo.new(), the max number of frames is "..automaticNumberOfQuads)
+	end
 
 	newAnim.numberOfQuads = numberOfQuads or automaticNumberOfQuads
 	newAnim.quads = {}
@@ -45,55 +52,54 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
 	newAnim.index = 1
 	newAnim.sense = 1
 	newAnim.finished = false
-	function newAnim.update(dt)
-		if not newAnim.finished then
-			newAnim.timer = newAnim.timer + dt
-			if newAnim.timer >= newAnim.millis then
-				newAnim.timer = 0
-				newAnim.index = newAnim.index + 1 * newAnim.sense
 
-				if newAnim.index > #newAnim.quads or newAnim.index < 1 then
-					if newAnim.mode == "repeat" then
-						newAnim.index = 1
-					elseif newAnim.mode == "rewind" then
-						newAnim.sense = newAnim.sense * -1
-						if newAnim.sense < 0 then
-							newAnim.index = newAnim.index - 1
+	table.insert(katsudo.anims, newAnim)
+	return setmetatable(newAnim, katsudo)
+end
+
+function katsudo:rewind()
+	self.mode = "rewind"
+	return self
+end
+
+function katsudo:once()
+	self.mode = "once"
+	return self
+end
+
+function katsudo:draw(...)
+	local q = self.quads[self.index]
+	love.graphics.draw(self.img, q, ...)
+end
+
+function katsudo:update(dt)
+	for i = 1, #self.anims do
+		local a = self.anims[i]
+
+		if not a.finished then
+			a.timer = a.timer + dt
+			if a.timer >= a.millis then
+				a.timer = 0
+				a.index = a.index + 1 * a.sense
+
+				if a.index > #a.quads or a.index < 1 then
+					if a.mode == "repeat" then
+						a.index = 1
+					elseif a.mode == "rewind" then
+						a.sense = a.sense * -1
+						if a.sense < 0 then
+							a.index = a.index - 1
 						end
-						if newAnim.sense > 0 then
-							newAnim.index = newAnim.index + 1
+						if a.sense > 0 then
+							a.index = a.index + 1
 						end
-					elseif newAnim.mode == "once" then
-						newAnim.finished = true
-						newAnim.index = newAnim.index - 1
+					elseif a.mode == "once" then
+						a.finished = true
+						a.index = a.index - 1
 					end
 				end
 			end
 		end
-	end
-
-	function newAnim.rewind()
-		newAnim.mode = "rewind"
-		return newAnim
-	end
-
-	function newAnim.once()
-		newAnim.mode = "once"
-		return newAnim
-	end
-
-	function newAnim.draw(...)
-		local q = newAnim.quads[newAnim.index]
-		love.graphics.draw(img, q, ...)
-	end
-
-	table.insert(katsudo.anims, newAnim)
-	return newAnim
-end
-
-function katsudo.update(dt)
-	for i = 1, #katsudo.anims do
-		katsudo.anims[i].update(dt)
 	end
 end
 
