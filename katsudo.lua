@@ -8,9 +8,6 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
 	if not (quadWidth or quadHeight) then
 		error("Error in katsudo.new(), parameter #2 nor #3, please provide width and height")
 	end
-	if numberOfQuads < 1 then
-		error("Error in katsudo.new(), parameter #4, numberOfQuads must be greater than zero")
-	end
 
 	if type(img) == "string" then
 		img = love.graphics.newImage(img)
