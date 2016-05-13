@@ -30,4 +30,4 @@ end
 
 And the result is something like this:
 
-![Katsudö gif](http://s32.postimg.org/dl8juakat/thunders.gif)
+![Katsudö gif](http://s32.postimg.org/5lokvncjp/image.gif)
