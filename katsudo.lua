@@ -1,3 +1,27 @@
+--[[
+
+Copyright (c) 2016-2017 Gustavo Alberto Lara Gómez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+]]
+
 katsudo = {}
 katsudo.__index = katsudo
 katsudo.anims = {}
@@ -31,16 +55,17 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
 	end
 
 	newAnim.numberOfQuads = numberOfQuads or automaticNumberOfQuads
-	newAnim.quads = {}
-	newAnim.millis = millis or 0.1 -- Milliseconds for each frame.
+	newAnim.items = {}
+	--newAnim.millis = millis or 0.1 -- Milliseconds for each frame.
 	newAnim.mode = "repeat"
 
 	-- Generate frames (quads):
 	local x, y = 0, 0
 	for i = 1, newAnim.numberOfQuads do
-		table.insert(newAnim.quads, love.graphics.newQuad(
-			x, y, quadWidth, quadHeight, imgW, imgH
-		))
+		table.insert(newAnim.items, {
+			quad = love.graphics.newQuad(x, y, quadWidth, quadHeight, imgW, imgH),
+			delay = millis or 0.1
+		})
 		x = x + quadWidth
 		if x >= imgW then
 			y = y + quadHeight
@@ -67,22 +92,43 @@ function katsudo:once()
 	return self
 end
 
+function katsudo:setDelay(millis, index, theRestAlso)
+	if index then
+		if self.items[index] then
+			self.items[index].delay = millis
+
+			if theRestAlso then
+				for i = index + 1, #self.items do
+					self.items[i].delay = millis					
+				end
+			end
+		else
+			error("error in setDelay(), no frame at index "..index.."")
+		end
+	else
+		for i = 1, #self.items do
+			self.items[i].delay = millis					
+		end
+	end
+	return self
+end
+
 function katsudo:draw(...)
-	local q = self.quads[self.index]
+	local q = self.items[self.index].quad
 	love.graphics.draw(self.img, q, ...)
 end
 
-function katsudo:update(dt)
-	for i = 1, #self.anims do
-		local a = self.anims[i]
+function katsudo.update(dt)
+	for i = 1, #katsudo.anims do
+		local a = katsudo.anims[i]
 
 		if not a.finished then
 			a.timer = a.timer + dt
-			if a.timer >= a.millis then
+			if a.timer >= a.items[a.index].delay then
 				a.timer = 0
 				a.index = a.index + 1 * a.sense
 
-				if a.index > #a.quads or a.index < 1 then
+				if a.index > #a.items or a.index < 1 then
 					if a.mode == "repeat" then
 						a.index = 1
 					elseif a.mode == "rewind" then
