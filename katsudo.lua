@@ -73,6 +73,8 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
 		end
 	end
 
+	newAnim.w = quadWidth
+	newAnim.h = quadHeight
 	newAnim.timer = 0
 	newAnim.index = 1
 	newAnim.sense = 1
