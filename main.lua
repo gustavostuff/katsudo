@@ -1,8 +1,10 @@
 local k = require "katsudo"
 
+local k = require "katsudo"
+
 function love.load()
     gr = love.graphics
-    gr.setBackgroundColor(213, 65, 0)
+    gr.setBackgroundColor(1, 1, 1)
     local imgDir = "imgs/tc.png"
     -- 18 frames of 30x55 at 25 FPS:
     tc  = k.new(imgDir, 30, 55, 18, 0.04)
@@ -20,4 +22,10 @@ function love.draw()
     tc2:draw(200, 50, 0, 5, 5)
     tc3:draw(350, 50, 0, 5, 5)
     tc4:draw(500, 50, 0, 5, 5)
+end
+
+function love.keypressed(k)
+  if k == 'escape' then
+    love.event.quit()
+  end
 end

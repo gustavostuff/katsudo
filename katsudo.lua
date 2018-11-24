@@ -32,8 +32,8 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
 
     newAnim.numberOfQuads = numberOfQuads or automaticNumberOfQuads
     newAnim.items = {}
-    --newAnim.millis = millis or 0.1 -- Milliseconds for each frame.
     newAnim.mode = "repeat"
+    newAnim.animType = 'frames'
 
     -- Generate frames (quads):
     local x, y = 0, 0
@@ -60,46 +60,80 @@ function katsudo.new(img, quadWidth, quadHeight, numberOfQuads, millis, style)
     return setmetatable(newAnim, katsudo)
 end
 
-function katsudo:rewind()
-    self.mode = "rewind"
-    return self
-end
+function katsudo.rotate(img, speed, reverse)
+    if not img then
+        error("Error in katsudo.rotate() parameter #1, please provide an image (string or Image)")
+    end
 
-function katsudo:once()
-    self.mode = "once"
-    return self
-end
+    if type(img) == "string" then
+        img = love.graphics.newImage(img)
+    end
 
-function katsudo:setDelay(millis, index, theRestAlso)
-    if index then
-        if self.items[index] then
-            self.items[index].delay = millis
+    local newAnim = {}
+    newAnim.img = img
+    newAnim.w = img:getWidth()
+    newAnim.h = img:getHeight()
+    newAnim.animType = 'rotation'
+    newAnim.speed = speed or 1
+    newAnim.rotationAmount = 0
+    newAnim.rotationCounterClockwise = reverse
 
-            if theRestAlso then
-                for i = index + 1, #self.items do
-                    self.items[i].delay = millis                    
-                end
-            end
+    -- random rotation sense:
+    if reverse == 'random' then
+        if love.math.random(1, 2) == 1 then
+            newAnim.rotationCounterClockwise = true
         else
-            error("error in setDelay(), no frame at index "..index.."")
-        end
-    else
-        for i = 1, #self.items do
-            self.items[i].delay = millis                    
+            newAnim.rotationCounterClockwise = false
         end
     end
-    return self
-end
 
-function katsudo:draw(...)
-    local q = self.items[self.index].quad
-    love.graphics.draw(self.img, q, ...)
+    table.insert(katsudo.anims, newAnim)
+    return setmetatable(newAnim, katsudo)
 end
 
 function katsudo.update(dt)
     for i = 1, #katsudo.anims do
         local a = katsudo.anims[i]
 
+        if a.animType == 'frames' then
+            if not a.finished then
+                a.timer = a.timer + dt
+                if a.timer >= a.items[a.index].delay then
+                    a.timer = 0
+                    a.index = a.index + 1 * a.sense
+
+                    if a.index > #a.items or a.index < 1 then
+                        if a.mode == "repeat" then
+                            a.index = 1
+                        elseif a.mode == "rewind" then
+                            a.sense = a.sense * -1
+                            if a.sense < 0 then
+                                a.index = a.index - 1
+                            end
+                            if a.sense > 0 then
+                                a.index = a.index + 1
+                            end
+                        elseif a.mode == "once" then
+                            a.finished = true
+                            a.index = a.index - 1
+                        end
+                    end
+                end
+            end
+        elseif a.animType == 'rotation' then
+            a.rotationAmount = a.rotationAmount + dt * a.speed * 360
+
+            if a.rotationAmount >= 360 then
+                a.rotationAmount = 0
+            end
+        end
+    end
+end
+
+function katsudo:selfUpdate(dt)
+    local a  = self
+
+    if a.animType == 'frames' then
         if not a.finished then
             a.timer = a.timer + dt
             if a.timer >= a.items[a.index].delay then
@@ -124,6 +158,68 @@ function katsudo.update(dt)
                 end
             end
         end
+    elseif a.animType == 'rotation' then
+        a.rotationAmount = a.rotationAmount + dt * a.speed * 360
+
+        if a.rotationAmount >= 360 then
+            a.rotationAmount = 0
+        end
+    end
+end
+
+function katsudo:r()
+    if self.rotationCounterClockwise then
+        return math.rad(360 - self.rotationAmount)
+    end
+
+    return math.rad(self.rotationAmount)
+end
+
+function katsudo:rewind()
+    if self.animType == 'frames' then
+        self.mode = "rewind"
+    end
+    return self
+end
+
+function katsudo:once()
+    if self.animType == 'frames' then
+        self.mode = "once"
+    end
+    return self
+end
+
+function katsudo:setDelay(millis, index, theRestAlso)
+    if self.animType == 'frames' then
+        if index then
+            if self.items[index] then
+                self.items[index].delay = millis
+
+                if theRestAlso then
+                    for i = index + 1, #self.items do
+                        self.items[i].delay = millis                    
+                    end
+                end
+            else
+                error("error in setDelay(), no frame at index "..index.."")
+            end
+        else
+            for i = 1, #self.items do
+                self.items[i].delay = millis                    
+            end
+        end
+    elseif self.animType == 'rotation' then
+        self.speed = millis
+    end
+    return self
+end
+
+function katsudo:draw(...)
+    if self.animType == 'frames' then
+        local q = self.items[self.index].quad
+        love.graphics.draw(self.img, q, ...)
+    elseif self.animType == 'rotation' then
+        love.graphics.draw(self.img, ...)
     end
 end
 

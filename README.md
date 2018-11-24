@@ -1,16 +1,16 @@
-### Katsudö is a small and simple animation library for [LÖVE](https://love2d.org/)
+## Katsudö is a small and simple animation library for [LÖVE](https://love2d.org/)
 
 [![License](http://img.shields.io/:license-MIT-blue.svg)](https://github.com/tavuntu/katsudo/blob/master/LICENSE.md)
-[![Version](http://img.shields.io/:version-0.0.1-green.svg)](https://github.com/tavuntu/katsudo/blob/master/README.md)
+[![Version](http://img.shields.io/:version-0.0.2-green.svg)](https://github.com/tavuntu/katsudo/blob/master/README.md)
 
-Here's an example:
+### Example 1:
 
 ```lua
 local k = require "katsudo"
 
 function love.load()
     gr = love.graphics
-    gr.setBackgroundColor(213, 65, 0)
+    gr.setBackgroundColor(1, 1, 1)
     local imgDir = "imgs/tc.png"
     -- 18 frames of 30x55 at 25 FPS:
     tc  = k.new(imgDir, 30, 55, 18, 0.04)
@@ -31,23 +31,23 @@ function love.draw()
 end
 ```
 
-And the result is something like this:
+Result:
 
-![Katsudö gif](http://s32.postimg.org/5lokvncjp/image.gif)
+[![test2.gif](https://i.postimg.cc/KcNLh2nS/test2.gif)](https://postimg.cc/t7s7F8S2)
 
-Using funtion setDelay() will set a different time on the given frame(s):
+### Example 2, setDelay():
 
 ```lua
 local k = require "katsudo"
 
 function love.load()
     gr = love.graphics
-    gr.setBackgroundColor(213, 65, 0)
+    gr.setBackgroundColor(1, 1, 1)
     imgDir = "imgs/tc.png"
     -- 18 frames of 30x55 at 25 FPS:
-    tc  =  k.new(imgDir, 30, 55, 18, 1):setDelay(0.5) -- change to half second for all frames
-    tc2  = k.new(imgDir, 30, 55, 18, 1):setDelay(0.5, 2) -- half second just for 2nd frame
-    tc3  = k.new(imgDir, 30, 55, 18, 1):setDelay(0.5, 2, true) -- starting with 2nd frame
+    tc  =  k.new(imgDir, 30, 55, 18, .1):setDelay(0.5) -- change to half second for all frames
+    tc2  = k.new(imgDir, 30, 55, 18, .1):setDelay(0.5, 2) -- half second just for 2nd frame
+    tc3  = k.new(imgDir, 30, 55, 18, .1):setDelay(0.5, 2, true) -- starting with 2nd frame
 end
 
 function love.update(dt)
@@ -60,3 +60,49 @@ function love.draw()
     tc3:draw(350, 50, 0, 5, 5)
 end
 ```
+
+Result:
+
+[![test3.gif](https://i.postimg.cc/gk2hYTDw/test3.gif)](https://postimg.cc/mhKkjVKR)
+
+### Example 3, rotation:
+
+```lua
+local k = require "katsudo"
+
+function love.load()
+  gr = love.graphics
+  gr.setBackgroundColor(1, 1, 1)
+  rotatingDounts = {}
+  -- spin clockwise at 60 RPM (a spin in 1 sec):
+  table.insert(rotatingDounts, k.rotate('imgs/donut.png'))
+  -- 30 RPM:
+  table.insert(rotatingDounts, k.rotate('imgs/donut.png', .5))
+  -- 30 RPM counter clockwise:
+  table.insert(rotatingDounts, k.rotate('imgs/donut.png', .5, true))
+  -- 30 RPM spinning in a random direction:
+  table.insert(rotatingDounts, k.rotate('imgs/donut.png', .5, 'random'))
+end
+
+function love.update(dt)
+  k.update(dt)
+end
+
+function love.draw()
+  for i = 1, #rotatingDounts do
+    local donut = rotatingDounts[i]
+    donut:draw(
+      i * donut.w,
+      200,
+      donut:r(),
+      1,
+      1,
+      donut.w / 2,
+      donut.h / 2)
+  end
+end
+```
+
+Result:
+
+[![test.gif](https://i.postimg.cc/mkbH1XW5/test.gif)](https://postimg.cc/CBQ1W41G)
