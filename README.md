@@ -44,7 +44,6 @@ function love.load()
     gr = love.graphics
     gr.setBackgroundColor(1, 1, 1)
     imgDir = "imgs/tc.png"
-    -- 18 frames of 30x55 at 25 FPS:
     tc  =  k.new(imgDir, 30, 55, 18, .1):setDelay(0.5) -- change to half second for all frames
     tc2  = k.new(imgDir, 30, 55, 18, .1):setDelay(0.5, 2) -- half second just for 2nd frame
     tc3  = k.new(imgDir, 30, 55, 18, .1):setDelay(0.5, 2, true) -- starting with 2nd frame
