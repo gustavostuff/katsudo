@@ -1,7 +1,5 @@
 local k = require "katsudo"
 
-local k = require "katsudo"
-
 function love.load()
     gr = love.graphics
     gr.setBackgroundColor(1, 1, 1)
