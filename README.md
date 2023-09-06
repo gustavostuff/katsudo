@@ -1,7 +1,7 @@
 ## Katsudö is a small and simple animation library for [LÖVE](https://love2d.org/)
 
-[![License](http://img.shields.io/:license-MIT-blue.svg)](https://github.com/tavuntu/katsudo/blob/master/LICENSE.md)
-[![Version](http://img.shields.io/:version-0.0.2-green.svg)](https://github.com/tavuntu/katsudo/blob/master/README.md)
+[![License](http://img.shields.io/:license-MIT-blue.svg)](https://github.com/gustavostuff/katsudo/blob/master/LICENSE.md)
+[![Version](http://img.shields.io/:version-0.0.2-green.svg)](https://github.com/gustavostuff/katsudo/blob/master/README.md)
 
 ### Example 1:
 
